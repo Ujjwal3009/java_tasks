@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <PLAYERS id="1" name="Alice" score="100"/>
+    <PLAYERS id="2" name="Bob" score="200"/>
+    <PLAYERS id="3" name="Charlie" score="300"/>
+</dataset>
