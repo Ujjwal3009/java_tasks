@@ -15,6 +15,10 @@
         <module>task3-effective-java</module>
         <module>task4-file-handling</module>
         <module>task5-tdd-exercises</module>
+        <module>task6-rest-api</module>
+        <module>task7-design-patterns</module>
+        <module>task8-spring-booking</module>
+        <module>task9-git-exercises</module>
     </modules>
 
     <properties>

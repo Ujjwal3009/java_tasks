@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Property placeholder for external properties -->
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <!-- Common Storage bean with init-method="init" and dataFilePath injected via p-namespace -->
+    <bean id="storage" class="com.epam.booking.dao.Storage" init-method="init"
+          p:dataFilePath="${data.file.path}"/>
+
+    <!-- DAO beans with autowire="byType" for storage injection -->
+    <bean id="userDao" class="com.epam.booking.dao.UserDao" autowire="byType"/>
+    <bean id="eventDao" class="com.epam.booking.dao.EventDao" autowire="byType"/>
+    <bean id="ticketDao" class="com.epam.booking.dao.TicketDao" autowire="byType"/>
+
+    <!-- Service beans with setter injection for DAOs using p-namespace -->
+    <bean id="userService" class="com.epam.booking.service.UserService"
+          p:userDao-ref="userDao"/>
+    <bean id="eventService" class="com.epam.booking.service.EventService"
+          p:eventDao-ref="eventDao"/>
+    <bean id="ticketService" class="com.epam.booking.service.TicketService"
+          p:ticketDao-ref="ticketDao"/>
+
+    <!-- Facade bean with constructor injection for services -->
+    <bean id="bookingFacade" class="com.epam.booking.facade.BookingFacadeImpl">
+        <constructor-arg ref="userService"/>
+        <constructor-arg ref="eventService"/>
+        <constructor-arg ref="ticketService"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,10 @@
+{
+  "users": [
+    {"id": 1, "name": "John Doe", "email": "john@example.com"},
+    {"id": 2, "name": "Jane Smith", "email": "jane@example.com"}
+  ],
+  "events": [
+    {"id": 1, "title": "Java Conference", "date": "2024-06-15"},
+    {"id": 2, "title": "Spring Meetup", "date": "2024-07-20"}
+  ]
+}
