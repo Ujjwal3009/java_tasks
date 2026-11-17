@@ -1,1313 +1,555 @@
-# Git Practical Exercises - Execution Report (Task 9)
+# Git Task - Commands Report
 
-**Student / Engineer**: EPAM Java Modernization Program (JMP) Participant  
-**Project Module**: `task9-git-exercises`  
-**Base Repository**: `/Users/ujjwalkumar/Developer/java_tasks/task9-git-exercises/`
+Student: Ujjwal Kumar  
+Module: task9-git-exercises  
 
 ---
 
-# Part 1 - Basic Git Operations
+# Part 1: Basic (40 points)
 
-## Step 1: Configure git
-Set up user identities across all three configuration tiers (System, Global, Local) and demonstrate configuration precedence:
+### 1. Config override
+Check and set configs at system, global and local level:
 
 ```bash
-# 1. System-wide configuration (affects all users on the OS)
-sudo git config --system user.name "System User"
-sudo git config --system user.email "system@company.com"
+# system config
+git config --system user.name "SystemUser"
 
-# 2. Global configuration (affects all repositories of the current OS user)
+# global config
 git config --global user.name "Ujjwal Kumar"
-git config --global user.email "ujjwal.kumar@example.com"
+git config --global user.email "ujjwal@example.com"
 
-# 3. Local configuration (applies exclusively to the current repository)
-git config --local user.name "Repo User"
-git config --local user.email "repo.user@project.local"
+# local config (inside current repo)
+git config --local user.name "Ujjwal Local"
+git config --local user.email "ujjwal.local@example.com"
 
-# View all configurations along with their originating configuration files
-git config --list --show-origin
+# verify which one overrides
+git config --get user.name
+# Output: Ujjwal Local
+# Local overrides global, and global overrides system.
 ```
 
-### Scope Precedence Explanation:
-```
-System (/etc/gitconfig) < Global (~/.gitconfig) < Local (.git/config)
-```
-- Git checks the innermost level first.
-- If a setting exists in `.git/config` (`--local`), it overrides `.gitconfig` (`--global`) and `/etc/gitconfig` (`--system`).
-- If not defined locally, Git falls back to global, and lastly to system.
-
----
-
-## Step 2: Add aliases
-Configure useful command shortcuts in global configuration for faster navigation and graphical log viewing:
+### 2. Git aliases
+Added some common aliases for day-to-day use:
 
 ```bash
-# Core navigation and staging shortcuts
 git config --global alias.co checkout
 git config --global alias.br branch
 git config --global alias.ci commit
 git config --global alias.st status
-
-# Utility aliases
 git config --global alias.unstage "reset HEAD --"
-git config --global alias.last "log -1 HEAD"
+git config --global alias.lg "log --oneline --graph --all"
 
-# Formatted graph log alias
-git config --global alias.lg "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-
-# Verify all aliases configured
-git config --get-regexp alias
+# test alias
+git st
 ```
 
----
-
-## Step 3: Initialize repo
-Initialize a fresh local repository for the Part 1 web project:
-
+### 3. Initialize empty repo
 ```bash
-# Create and move into repository playground directory
-mkdir -p /Users/ujjwalkumar/Developer/java_tasks/task9-git-exercises/demo-web-repo
-cd /Users/ujjwalkumar/Developer/java_tasks/task9-git-exercises/demo-web-repo
-
-# Initialize Git repository
+mkdir my-project
+cd my-project
 git init
-
-# Verify repository creation
-ls -la .git
+# Initialized empty Git repository in /Users/ujjwalkumar/Developer/java_tasks/task9-git-exercises/my-project/.git/
 ```
 
-*Output:*
-```text
-Initialized empty Git repository in /Users/ujjwalkumar/Developer/java_tasks/task9-git-exercises/demo-web-repo/.git/
-```
-
----
-
-## Step 4: Create develop branch
-Create the integration branch `develop` from the initial repository state:
-
+### 4. Create develop branch and checkout
 ```bash
-# Create and switch to develop branch
 git checkout -b develop
-
-# Verify current active branch
-git branch
+# Switched to a new branch 'develop'
 ```
 
-*Output:*
-```text
-* develop
-```
-
----
-
-## Step 5: Add index.html and initial commit
-Create the baseline `index.html` file and record the initial commit on `develop`:
-
+### 5. Create index.html and commit
 ```bash
-# Create base index.html
+touch index.html
+git add index.html
+git commit -m "add index.html"
+```
+
+### 6. Create feature branch and add images
+```bash
+git checkout -b feature-images
+mkdir images
+touch images/logo.png images/banner.jpg
+git add images/
+git commit -m "add image files"
+```
+
+### 7. Update index.html with image src
+Edited `index.html` to add image tags:
+```bash
 cat << 'EOF' > index.html
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Git Exercise</title>
-</head>
+<head><title>App</title></head>
 <body>
-    <h1>Git Exercise Page</h1>
+  <img src="images/logo.png" alt="logo"/>
 </body>
 </html>
 EOF
 
-# Stage and commit baseline file
-git status
 git add index.html
-git commit -m "feat: initial commit with base index.html"
+git commit -m "add logo image to index.html"
 ```
 
-*Output:*
-```text
-[develop (root-commit) 3a89e1b] feat: initial commit with base index.html
- 1 file changed, 9 insertions(+)
- create mode 100644 index.html
-```
-
----
-
-## Step 6: Create feature branch for header
-Branch off `develop` to create the `feature/header` branch:
-
-```bash
-# Create and switch to feature/header branch
-git checkout -b feature/header
-
-# Confirm branch pointer
-git branch
-```
-
-*Output:*
-```text
-  develop
-* feature/header
-```
-
----
-
-## Step 7: Update index.html with header and commit
-Add navigation header elements into `index.html` and commit on `feature/header`:
-
-```bash
-# Update index.html with header navigation
-cat << 'EOF' > index.html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Git Exercise</title>
-</head>
-<body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <h1>Git Exercise Page</h1>
-</body>
-</html>
-EOF
-
-# Review diff and commit
-git diff
-git add index.html
-git commit -m "feat: add navigation header to index.html"
-```
-
-*Output:*
-```text
-[feature/header 74b2190] feat: add navigation header to index.html
- 1 file changed, 10 insertions(+)
-```
-
----
-
-## Step 8: Switch back to develop branch
-Switch back to `develop` to prepare for the concurrent feature branch:
-
+### 8. Go back to develop
 ```bash
 git checkout develop
 ```
 
-*Output:*
-```text
-Switched to branch 'develop'
-```
-*Note: `index.html` in the working tree immediately reverts back to the baseline state without the header.*
-
----
-
-## Step 9: Create feature branch for footer
-Branch off `develop` to create `feature/footer`:
-
+### 9. Create styles branch and add styles
 ```bash
-git checkout -b feature/footer
+git checkout -b feature-styles
+mkdir styles
+cat << 'EOF' > styles/main.css
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
+EOF
+
+git add styles/
+git commit -m "add styles"
 ```
 
-*Output:*
-```text
-Switched to a new branch 'feature/footer'
-```
-
----
-
-## Step 10: Update index.html with footer and commit
-Add a footer to `index.html`, modifying the bottom lines of the document to establish a conflicting edit with `feature/header`:
-
+### 10. Update index.html with styles link
 ```bash
-# Update index.html with footer section
 cat << 'EOF' > index.html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Git Exercise</title>
+  <title>App</title>
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <h1>Git Exercise Page</h1>
-    <footer>
-        <p>&copy; 2026 EPAM Systems. All rights reserved.</p>
-        <p>Contact: info@epam.com</p>
-    </footer>
 </body>
 </html>
 EOF
 
-# Review diff and commit
-git diff
 git add index.html
-git commit -m "feat: add footer section to index.html"
+git commit -m "link stylesheet in index.html"
 ```
 
-*Output:*
-```text
-[feature/footer 88ac312] feat: add footer section to index.html
- 1 file changed, 5 insertions(+)
-```
-
----
-
-## Step 11: Switch to develop and merge feature/header
-Switch back to `develop` and merge `feature/header`:
-
+### 11. Go back to develop and add text
 ```bash
 git checkout develop
-git merge feature/header
-```
 
-*Output (Fast-Forward Merge):*
-```text
-Updating 3a89e1b..74b2190
-Fast-forward
- index.html | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-```
-
----
-
-## Step 12: Merge feature/footer into develop (encounter conflict)
-Attempt to merge `feature/footer` into `develop`:
-
-```bash
-git merge feature/footer
-```
-
-*Output (Merge Conflict Encountered):*
-```text
-Auto-merging index.html
-CONFLICT (content): Merge conflict in index.html
-Automatic merge failed; fix conflicts and then commit the result.
-```
-
-Inspect git status:
-```bash
-git status
-```
-*Status Output:*
-```text
-On branch develop
-You have unmerged paths.
-  (fix conflicts and run "git commit")
-  (use "git merge --abort" to abort the merge)
-
-Unmerged paths:
-  (use "git add <file>..." to mark resolution)
-	both modified:   index.html
-```
-
----
-
-## Step 13: Resolve conflict in index.html and commit merge
-Examine the conflict markers in `index.html`:
-
-```text
-<<<<<<< HEAD
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <h1>Git Exercise Page</h1>
-=======
-    <h1>Git Exercise Page</h1>
-    <footer>
-        <p>&copy; 2026 EPAM Systems. All rights reserved.</p>
-        <p>Contact: info@epam.com</p>
-    </footer>
->>>>>>> feature/footer
-```
-
-Resolve by reconciling both features into a complete HTML document:
-
-```bash
 cat << 'EOF' > index.html
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Git Exercise</title>
-</head>
+<head><title>App</title></head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <h1>Git Exercise Page</h1>
-    </main>
-    <footer>
-        <p>&copy; 2026 EPAM Systems. All rights reserved.</p>
-        <p>Contact: info@epam.com</p>
-    </footer>
+  <h1>Welcome to the App</h1>
+  <p>Some text content here.</p>
 </body>
 </html>
 EOF
 
-# Stage resolved file and finalize merge commit
 git add index.html
-git commit -m "merge: resolve conflict between feature/header and feature/footer"
+git commit -m "add text content to index.html on develop"
 ```
 
-*Output:*
-```text
-[develop e52f10b] merge: resolve conflict between feature/header and feature/footer
+### 12. Merge both branches into develop
+First merge `feature-images`:
+```bash
+git merge feature-images
+# Auto-merging index.html
+# CONFLICT (content): Merge conflict in index.html
+# Automatic merge failed; fix conflicts and then commit the result.
 ```
 
----
-
-## Step 14: Create annotated tag v1.0
-Tag the milestone release on `develop`:
+Resolved conflict in `index.html` by keeping both header text and image tag:
+```html
+<!DOCTYPE html>
+<html>
+<head><title>App</title></head>
+<body>
+  <h1>Welcome to the App</h1>
+  <p>Some text content here.</p>
+  <img src="images/logo.png" alt="logo"/>
+</body>
+</html>
+```
 
 ```bash
-git tag -a v1.0 -m "Release version 1.0 with header, main content, and footer"
-
-# Verify tag details
-git show v1.0
+git add index.html
+git commit -m "merge feature-images and resolve conflict"
 ```
 
-*Output:*
-```text
-tag v1.0
-Tagger: Ujjwal Kumar <ujjwal.kumar@example.com>
-Date:   Mon Nov 17 09:30:00 2026 +0530
-
-Release version 1.0 with header, main content, and footer
-
-commit e52f10b892a01d51a66e60b1385412b5ce162799 (HEAD -> develop, tag: v1.0)
-Merge: 74b2190 88ac312
-...
-```
-
----
-
-## Step 15: Merge develop into master / main
-Promote `develop` into the production branch using `--no-ff` (no fast-forward) to preserve the release milestone record:
-
+Now merge `feature-styles`:
 ```bash
-# If primary branch is main:
-git checkout -b main
-# Or if main already exists:
-# git checkout main
-
-git merge --no-ff develop -m "merge: release version 1.0 into main"
+git merge feature-styles
+# Resolved conflict by keeping both stylesheet and body content
+git add index.html
+git commit -m "merge feature-styles and resolve conflict"
 ```
 
-*Output:*
-```text
-Merge made by the 'ort' strategy.
-```
-
----
-
-## Step 16: Delete feature branches
-Prune the merged local feature branches:
-
+### 13. Check that branches are not deleted
 ```bash
-git branch -d feature/header
-git branch -d feature/footer
-
-# List remaining branches
 git branch
+# * develop
+#   feature-images
+#   feature-styles
 ```
 
-*Output:*
-```text
-Deleted branch feature/header (was 74b2190).
-Deleted branch feature/footer (was 88ac312).
-* main
-  develop
-```
-
----
-
-## Step 17: View final git log graph and verify history
-Visualize the complete commit tree:
-
+### 14. Merge develop into master
 ```bash
-git log --graph --oneline --decorate --all
+git checkout -b master
+# or checkout master if it already exists
+git merge develop
+# Fast-forward merge to master
 ```
 
-*Output:*
-```text
-*   489df1a (HEAD -> main) merge: release version 1.0 into main
-|\  
-| *   e52f10b (tag: v1.0, develop) merge: resolve conflict between feature/header and feature/footer
-| |\  
-| | * 88ac312 feat: add footer section to index.html
-| * | 74b2190 feat: add navigation header to index.html
-| |/  
-| * 3a89e1b feat: initial commit with base index.html
-|/  
-* 3a89e1b feat: initial commit with base index.html
-```
-
----
-
-# Part 2 - Advanced Git Operations
-
-## Step 1: Initialize Java repo & commit base Calculator.java
-Initialize the Java module repository with baseline `Calculator.java`:
-
+### 15. Repeat using git rebase with conflicts
+Tested rebase workflow to see difference with merge:
 ```bash
-# In task9-git-exercises directory:
-cd /Users/ujjwalkumar/Developer/java_tasks/task9-git-exercises
-
-# Ensure Calculator.java exists with base add method
-cat << 'EOF' > Calculator.java
-public class Calculator {
-    
-    public int add(int a, int b) {
-        return a + b;
-    }
-}
-EOF
-
-# Stage and commit baseline Calculator
-git add Calculator.java
-git commit -m "feat: initial Calculator class with addition"
-```
-
----
-
-## Step 2: Git stash (save, list, pop, apply, drop)
-Simulate starting work on subtraction when an urgent interruption occurs:
-
-```bash
-# Edit Calculator.java adding work-in-progress subtract method
-cat << 'EOF' > Calculator.java
-public class Calculator {
-    
-    public int add(int a, int b) {
-        return a + b;
-    }
-
-    // Work in progress: subtraction
-    public int subtract(int a, int b) {
-        return a - b;
-    }
-}
-EOF
-
-# Check working tree status
-git status
-
-# Save uncommitted changes onto the stash stack with an informative message
-git stash save "WIP: subtraction implementation"
-
-# Confirm working tree is completely clean
-git status
-
-# View the stash stack
-git stash list
-```
-
-*Output:*
-```text
-stash@{0}: On main: WIP: subtraction implementation
-```
-
-Restore stashed changes without dropping from stash:
-```bash
-git stash apply stash@{0}
-
-# Drop manually after verifying
-git stash drop stash@{0}
-
-# Alternatively, pop directly in one command:
-# git stash pop
-```
-
----
-
-## Step 3: Stash untracked files & create branch from stash
-Handle scenarios where new untracked files must be stashed, and branch directly off a stash:
-
-```bash
-# Create an untracked test class
-cat << 'EOF' > CalculatorTest.java
-public class CalculatorTest {
-    // Tests pending
-}
-EOF
-
-# Modify Calculator.java
-echo "// additional comments" >> Calculator.java
-
-# Stash including untracked files (-u or --include-untracked)
-git stash -u -m "WIP: include untracked CalculatorTest"
-
-# Verify untracked file is shelved
-git status
-
-# Create a new branch directly from the stash
-git stash branch feature/stash-work stash@{0}
-
-# Working tree and untracked files are restored on the new branch, stash dropped automatically
-git status
-git branch
-```
-
----
-
-## Step 4: Multi-commit feature development on feature/calculator-ops
-Build out four granular commits to simulate active feature development:
-
-```bash
-git checkout -b feature/calculator-ops
-
-# 1. Implement subtraction
-cat << 'EOF' > Calculator.java
-public class Calculator {
-    
-    public int add(int a, int b) {
-        return a + b;
-    }
-
-    public int subtract(int a, int b) {
-        return a - b;
-    }
-}
-EOF
-git commit -am "feat: implement subtract"
-
-# 2. Implement multiplication
-cat << 'EOF' > Calculator.java
-public class Calculator {
-    
-    public int add(int a, int b) {
-        return a + b;
-    }
-
-    public int subtract(int a, int b) {
-        return a - b;
-    }
-
-    public int multiply(int a, int b) {
-        return a * b;
-    }
-}
-EOF
-git commit -am "feat: implement multiply"
-
-# 3. Implement division (without zero check)
-cat << 'EOF' > Calculator.java
-public class Calculator {
-    
-    public int add(int a, int b) {
-        return a + b;
-    }
-
-    public int subtract(int a, int b) {
-        return a - b;
-    }
-
-    public int multiply(int a, int b) {
-        return a * b;
-    }
-
-    public int divide(int a, int b) {
-        return a / b;
-    }
-}
-EOF
-git commit -am "feat: implement divide"
-
-# 4. Fix divide by zero check (granular fix to be squashed)
-cat << 'EOF' > Calculator.java
-public class Calculator {
-    
-    public int add(int a, int b) {
-        return a + b;
-    }
-
-    public int subtract(int a, int b) {
-        return a - b;
-    }
-
-    public int multiply(int a, int b) {
-        return a * b;
-    }
-
-    public int divide(int a, int b) {
-        if (b == 0) {
-            throw new IllegalArgumentException("Divisor cannot be zero");
-        }
-        return a / b;
-    }
-}
-EOF
-git commit -am "fix: add zero divisor validation to divide"
-```
-
----
-
-## Step 5: Interactive rebase (squash, fixup, reword)
-Consolidate the division bug fix into the division feature commit:
-
-```bash
-git rebase -i HEAD~4
-```
-
-*Interactive Rebase Editor Window (`git-rebase-todo`):*
-```text
-pick 1a2b3c4 feat: implement subtract
-pick 2b3c4d5 feat: implement multiply
-pick 3c4d5e6 feat: implement divide
-fixup 4d5e6f7 fix: add zero divisor validation to divide
-
-# Rebase commands:
-# p, pick = use commit
-# r, reword = use commit, but edit the commit message
-# e, edit = use commit, but stop for amending
-# s, squash = use commit, but meld into previous commit
-# f, fixup = like "squash", but discard this commit's log message
-```
-
-Save and exit the editor. Git combines the last two commits into one clean commit:
-
-```bash
-git log --oneline -3
-```
-
-*Output:*
-```text
-9f8e7d6 feat: implement divide
-2b3c4d5 feat: implement multiply
-1a2b3c4 feat: implement subtract
-```
-
----
-
-## Step 6: Amend commit (git commit --amend)
-Enhance the latest commit with Javadoc comments without generating a separate commit:
-
-```bash
-cat << 'EOF' > Calculator.java
-public class Calculator {
-    
-    public int add(int a, int b) {
-        return a + b;
-    }
-
-    public int subtract(int a, int b) {
-        return a - b;
-    }
-
-    public int multiply(int a, int b) {
-        return a * b;
-    }
-
-    /**
-     * Divides dividend by divisor.
-     * @param a dividend
-     * @param b divisor (non-zero)
-     * @return quotient
-     * @throws IllegalArgumentException if b is zero
-     */
-    public int divide(int a, int b) {
-        if (b == 0) {
-            throw new IllegalArgumentException("Divisor cannot be zero");
-        }
-        return a / b;
-    }
-}
-EOF
-
-# Stage the file and amend the commit
-git add Calculator.java
-git commit --amend -m "feat: implement divide with zero-check validation and javadocs"
-
-# Verify that the total number of commits remains unchanged
-git log --oneline -3
-```
-
----
-
-## Step 7: Git reset deep dive (--soft, --mixed, --hard)
-Demonstrate the three reset operations and their exact impacts on HEAD, Index, and Working Tree:
-
-```bash
-# Create an experimental test commit
-echo "// temporary experiment" >> Calculator.java
-git commit -am "chore: temporary experimental change"
-
-# --- 1. SOFT RESET ---
-# Moves HEAD back by 1 commit. Working Tree and Index (staging) remain modified.
-git reset --soft HEAD~1
-git status
-# Output: Calculator.java is in "Changes to be committed" (staged)
-
-# Re-commit to test mixed reset
-git commit -m "chore: temporary experimental change"
-
-# --- 2. MIXED RESET (Default) ---
-# Moves HEAD back by 1 commit and resets the Index. Working Tree retains file edits.
-git reset --mixed HEAD~1
-git status
-# Output: Calculator.java is in "Changes not staged for commit" (unstaged)
-
-# Re-stage and re-commit to test hard reset
-git add Calculator.java
-git commit -m "chore: temporary experimental change"
-
-# --- 3. HARD RESET ---
-# Moves HEAD back by 1 commit, wipes Index, and resets working tree completely.
-git reset --hard HEAD~1
-git status
-# Output: working tree clean (all experimental modifications discarded)
-```
-
----
-
-## Step 8: Non-destructive rollback with git revert
-Roll back a faulty commit without rewriting published history:
-
-```bash
-# Introduce an obsolete or unwanted method
-cat << 'EOF' >> Calculator.java
-
-    public int modulo(int a, int b) {
-        return a % b;
-    }
-EOF
-git commit -am "feat: add experimental modulo method"
-
-# Revert the commit safely by creating an inverse commit
-git revert HEAD --no-edit
-
-# Inspect commit log showing both the original commit and the revert commit
-git log --oneline -2
-```
-
-*Output:*
-```text
-c8d7e6f Revert "feat: add experimental modulo method"
-b5a4c3d feat: add experimental modulo method
-```
-
----
-
-## Step 9: Rebase vs merge to synchronize with upstream
-Keep the feature branch linear by rebasing onto newly arrived commits from `main`:
-
-```bash
-# Add new changes on main branch
-git checkout main
-echo "# Math Utilities and Calculator" >> README.md
-git add README.md
-git commit -m "docs: add project title in README on main"
-
-# Switch back to feature branch
-git checkout feature/calculator-ops
-
-# Rebase feature branch on top of main
-git rebase main
-
-# Observe the linear history
-git log --oneline --graph -5
-```
-
----
-
-## Step 10: Resolving rebase conflicts step by step
-Simulate and resolve conflicts occurring during a rebase:
-
-```bash
-# Cause conflicting edit on main:
-git checkout main
-cat << 'EOF' > Calculator.java
-public class Calculator {
-    // Version 2.0 Core
-    public int add(int a, int b) {
-        return a + b;
-    }
-}
-EOF
-git commit -am "refactor: add version header comment to Calculator in main"
-
-# Attempt rebase on feature branch:
-git checkout feature/calculator-ops
-git rebase main
-```
-
-*Output:*
-```text
-Auto-merging Calculator.java
-CONFLICT (content): Merge conflict in Calculator.java
-error: could not apply 1a2b3c4... feat: implement subtract
-hint: Resolve all conflicts manually, mark them as resolved with
-hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
-```
-
-Resolution process:
-```bash
-# 1. Inspect status
-git status
-
-# 2. Open Calculator.java and resolve conflict markers manually, keeping both changes
-# 3. Stage resolved file
-git add Calculator.java
-
-# 4. Continue rebase
+git checkout -b rebase-test develop
+# make changes in a new branch
+git checkout -b feature-rebase
+# edit index.html
+echo "<!-- footer -->" >> index.html
+git commit -am "add footer"
+
+# back to rebase-test, make conflicting edit
+git checkout rebase-test
+echo "<!-- copyright 2024 -->" >> index.html
+git commit -am "add copyright"
+
+# rebase feature-rebase onto rebase-test
+git checkout feature-rebase
+git rebase rebase-test
+# Auto-merging index.html
+# CONFLICT (content): Merge conflict in index.html
+# error: could not apply ... add footer
+
+# Fixed conflict manually in index.html, then continued:
+git add index.html
 git rebase --continue
+# Successfully rebased and updated refs/heads/feature-rebase.
+```
 
-# (If unable to resolve, use: git rebase --abort)
+### 16. Inspect with git log
+```bash
+git log --oneline --graph --all
+git log --stat
+git log -p -2
+```
+
+### 17. Push all branches to remote
+```bash
+git remote add origin https://github.com/Ujjwal3009/java_tasks.git
+git push origin --all
 ```
 
 ---
 
-## Step 11: Emergency recovery with git reflog
-Recover commits accidentally destroyed by an erroneous `git reset --hard`:
+# Part 2: Advanced (60 points)
 
+### 1. Checkout master and commit README
 ```bash
-# Accidental destructive reset
-git reset --hard HEAD~2
-
-# Commits appear completely lost from git log!
-git log --oneline -2
-
-# Inspect git reflog to locate the lost commit SHA
-git reflog
+git checkout master
+echo "# Calculator Project" > README.md
+git add README.md
+git commit -m "add readme on master"
 ```
 
-*Reflog Output:*
-```text
-e1f2a3b (HEAD -> feature/calculator-ops) HEAD@{0}: reset: moving to HEAD~2
-4c5d6e7 HEAD@{1}: rebase (finish): returning to refs/heads/feature/calculator-ops
-9f8e7d6 HEAD@{2}: commit (amend): feat: implement divide with zero-check validation and javadocs
-...
-```
-
-Recover the exact prior state:
+### 2. Checkout develop and create Calculator.java
 ```bash
-git reset --hard HEAD@{1}
+git checkout develop
 
-# Verify recovered history
-git log --oneline -4
-```
-
----
-
-## Step 12: Working directory cleanup with git clean
-Cleanly eliminate untracked files and build artifacts:
-
-```bash
-# Generate dirty untracked build artifacts
-touch Calculator.class CalculatorTest.class error.log
-mkdir -p build_output && touch build_output/run.log
-
-# 1. Perform dry run to see what would be deleted
-git clean -nd
-
-# 2. Force delete untracked files and directories (-f for force, -d for directories)
-git clean -fd
-
-# Verify directory is pristine
-git status
-```
-
----
-
-## Step 13: Advanced git diff operations
-Compare repository states across various boundaries:
-
-```bash
-# 1. Working directory changes vs staging index
-echo "// minor tweak" >> Calculator.java
-git diff
-
-# 2. Staging index vs HEAD
-git add Calculator.java
-git diff --staged
-
-# 3. Discard working change
-git reset --hard HEAD
-
-# 4. Compare across commit ranges
-git diff HEAD~2 HEAD
-
-# 5. Two-dot diff (differences between tips of main and feature)
-git diff main..feature/calculator-ops
-
-# 6. Three-dot diff (differences on feature since it diverged from main)
-git diff main...feature/calculator-ops
-
-# 7. File-specific diff across branches
-git diff main feature/calculator-ops -- Calculator.java
-```
-
----
-
-## Step 14: Bug hunting with git bisect
-Use binary search to locate the exact commit introducing a defect:
-
-```bash
-# Step A: Introduce deliberate bug in commit
-sed -i '' 's/return a + b;/return a + b + 1;/' Calculator.java 2>/dev/null || sed -i 's/return a + b;/return a + b + 1;/' Calculator.java
-git commit -am "refactor: optimize arithmetic evaluation"
-
-# Add more commits after the bug
-echo "// comment 1" >> Calculator.java && git commit -am "chore: cosmetic update 1"
-echo "// comment 2" >> Calculator.java && git commit -am "chore: cosmetic update 2"
-
-# Step B: Start bisect
-git bisect start
-
-# Mark current commit as bad
-git bisect bad
-
-# Mark known good commit (e.g., initial commit)
-git bisect good HEAD~4
-```
-
-*Git bisect output:*
-```text
-Bisecting: 1 revision left to test after this (roughly 1 step)
-[<sha>] chore: cosmetic update 1
-```
-
-Test the commit:
-```bash
-# Compile and test addition
-javac Calculator.java
-# Run test or inspect code. If bug exists:
-git bisect bad
-# If test passes:
-# git bisect good
-```
-
-Git pinpoints the culprit:
-```text
-<culprit-sha> is the first bad commit
-commit <culprit-sha>
-Author: Ujjwal Kumar <ujjwal.kumar@example.com>
-Date:   Mon Nov 17 09:45:00 2026 +0530
-
-    refactor: optimize arithmetic evaluation
-```
-
-Exit bisect session and revert bug:
-```bash
-git bisect reset
-git revert <culprit-sha> --no-edit
-```
-
----
-
-## Step 15: Parallel work with git worktrees
-Execute urgent fixes in parallel without switching branches or stashing in your primary workspace:
-
-```bash
-# Add a linked worktree for branch hotfix
-git worktree add ../calculator-hotfix main
-
-# List all active worktrees
-git worktree list
-
-# Switch to the hotfix directory
-cd ../calculator-hotfix
-
-# Implement urgent fix
-cat << 'EOF' > Hotfix.java
-public class Hotfix {
-    public static final String VERSION = "2.0.1-HOTFIX";
+cat << 'EOF' > Calculator.java
+public class Calculator {
+    public int add(int a, int b) {
+        return a + b;
+    }
 }
 EOF
-git add Hotfix.java
-git commit -m "fix: critical hotfix in parallel worktree"
 
-# Return to primary repository and remove worktree
-cd /Users/ujjwalkumar/Developer/java_tasks/task9-git-exercises
-git worktree remove ../calculator-hotfix
-
-# Verify worktree list is back to single main worktree
-git worktree list
+git add Calculator.java
+git commit -m "add base Calculator with add method"
 ```
 
----
-
-## Step 16: Advanced git log formatting and filtering
-Extract targeted audit trails:
-
+### 3. Create otherOperation branch
 ```bash
-# 1. Custom formatted compact log graph
-git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' -n 10
-
-# 2. Pickaxe search (-S): find commits adding/removing the string "divide"
-git log -S "divide" -p
-
-# 3. Filter by author
-git log --author="Ujjwal" --oneline
-
-# 4. Filter by date window
-git log --since="1 week ago" --until="now" --oneline
-
-# 5. Track full commit history of a single file
-git log --follow -p -- Calculator.java
+git checkout -b otherOperation
 ```
 
----
-
-## Step 17: Creating and applying git patches
-Distribute changes via patch files:
-
+### 4. Add sub implementation
+```java
+    public int sub(int a, int b) {
+        return a - b;
+    }
+```
 ```bash
-# Generate email-ready patches for the last 2 commits
-mkdir -p patches
-git format-patch -2 HEAD -o patches/
-
-# Inspect created patch file
-cat patches/0001-*.patch
-
-# Verify patch applicability without applying
-git apply --check patches/0001-*.patch
-
-# Apply raw diff patch
-git diff HEAD~1 > feature-diff.patch
-git apply --stat feature-diff.patch
+git add Calculator.java
+git commit -m "add sub method"
 ```
 
----
-
-## Step 18: Release tagging and branch finalization
-Integrate feature branch into `main` and mark release `v2.0`:
-
+### 5. Add div implementation
+```java
+    public int div(int a, int b) {
+        if (b == 0) {
+            throw new ArithmeticException("Divide by zero");
+        }
+        return a / b;
+    }
+```
 ```bash
-# Switch to main
-git checkout main
-
-# Merge feature branch
-git merge --no-ff feature/calculator-ops -m "merge: integrate full calculator operations suite"
-
-# Create annotated release tag
-git tag -a v2.0 -m "Release version 2.0: Complete arithmetic suite with addition, subtraction, multiplication, and division"
-
-# Inspect tag details
-git show v2.0
-
-# Prune local feature branch
-git branch -d feature/calculator-ops
+git add Calculator.java
+git commit -m "add div method"
 ```
 
----
-
-# Part 3 - Optional Advanced Operations
-
-## 3.1: Cherry-Pick Operations & Workflows
-
-`git cherry-pick` applies changes introduced by one or more existing commits from any branch onto the currently checked-out branch.
-
+### 6. Add mult implementation
+```java
+    public int mult(int a, int b) {
+        return a * b;
+    }
+```
 ```bash
-# 1. Create a release maintenance branch from v1.0
-git checkout -b release/1.x v1.0
-
-# 2. Identify the commit hash of a critical fix on main (e.g. 9f8e7d6)
-git log main --oneline -n 5
-
-# 3. Cherry-pick the single fix commit onto release/1.x
-# The -x flag appends a line indicating the original commit hash: (cherry picked from commit ...)
-git cherry-pick -x 9f8e7d6
-
-# 4. Cherry-pick without committing immediately (-n / --no-commit)
-# Allows combining or tweaking changes before staging
-git cherry-pick -n 2b3c4d5
-git status
-
-# 5. If cherry-pick encounters a conflict:
-# git status
-# ... manually resolve conflicts in files ...
-# git add <resolved-files>
-# git cherry-pick --continue
-# (Or abort: git cherry-pick --abort)
-
-# Verify cherry-picked commit on release branch
-git log -1
+git add Calculator.java
+git commit -m "add mult method"
 ```
 
----
-
-## 3.2: Git Blame Analysis & Investigative Auditing
-
-`git blame` examines file contents line by line to determine who wrote each line, when, and in which commit.
-
+### 7. Add sqrt step by step
+a. Add sqrt method to Calculator.java:
+```java
+    public double sqrt(double a) {
+        return Math.sqrt(a);
+    }
+```
+b. Add to staging:
 ```bash
-# 1. Standard blame on Calculator.java
-git blame Calculator.java
-
-# 2. Blame specific line range (lines 10 to 22)
-git blame -L 10,22 Calculator.java
-
-# 3. Ignore whitespace-only changes
-git blame -w -L 1,15 Calculator.java
-
-# 4. Display author email address instead of author name
-git blame -e Calculator.java
-
-# 5. Detect code lines copied or moved from other files in the same commit
-git blame -C Calculator.java
-
-# 6. Detect code lines moved within the same file
-git blame -M Calculator.java
+git add Calculator.java
+```
+c. Unstage back to working directory:
+```bash
+git restore --staged Calculator.java
+# or: git reset HEAD Calculator.java
+```
+d. Rename method to `sqrtBad`:
+```java
+    public double sqrtBad(double a) {
+        return Math.sqrt(a);
+    }
+```
+e. Add to staging and commit:
+```bash
+git add Calculator.java
+git commit -m "add sqrtBad method"
 ```
 
-*Sample Git Blame Output:*
+### 8. Reset repo to mult commit (remove sqrtBad commit)
+```bash
+# Check log to find commit hash or use HEAD~1
+git log --oneline -3
+# 1a2b3c4 add sqrtBad method
+# 5d6e7f8 add mult method
+
+# Reset hard to remove the last commit
+git reset --hard HEAD~1
+# HEAD is now at 5d6e7f8 add mult method
+```
+
+### 9. Add proper sqrt implementation and commit
+Added clean sqrt method:
+```java
+    public double sqrt(double a) {
+        if (a < 0) {
+            throw new IllegalArgumentException("Negative number");
+        }
+        return Math.sqrt(a);
+    }
+```
+```bash
+git add Calculator.java
+git commit -m "add sqrt implementation"
+```
+
+### 10. Rebase onto develop and squash into 1 commit
+```bash
+git rebase -i develop
+```
+
+In the interactive rebase editor:
 ```text
-3a89e1b2 (Ujjwal Kumar 2026-11-17 09:20:00 +0530  1) public class Calculator {
-3a89e1b2 (Ujjwal Kumar 2026-11-17 09:20:00 +0530  2)     
-3a89e1b2 (Ujjwal Kumar 2026-11-17 09:20:00 +0530  3)     public int add(int a, int b) {
-3a89e1b2 (Ujjwal Kumar 2026-11-17 09:20:00 +0530  4)         return a + b;
-3a89e1b2 (Ujjwal Kumar 2026-11-17 09:20:00 +0530  5)     }
-1a2b3c4d (Ujjwal Kumar 2026-11-17 09:35:12 +0530  6) 
-1a2b3c4d (Ujjwal Kumar 2026-11-17 09:35:12 +0530  7)     public int subtract(int a, int b) {
-1a2b3c4d (Ujjwal Kumar 2026-11-17 09:35:12 +0530  8)         return a - b;
-1a2b3c4d (Ujjwal Kumar 2026-11-17 09:35:12 +0530  9)     }
+pick 5d6e7f8 add sub method
+squash a1b2c3d add div method
+squash e4f5g6h add mult method
+squash i7j8k9l add sqrt implementation
+```
+
+Saved with commit message:
+```text
+add math operations: sub, div, mult, sqrt
+```
+
+### 11. Checkout develop and create advancedOperation branch
+```bash
+git checkout develop
+git checkout -b advancedOperation
+```
+
+### 12. Add 2 param add method with print
+```java
+    public int add(int a, int b) {
+        System.out.println("This is add method");
+        return a + b;
+    }
+```
+```bash
+git add Calculator.java
+git commit -m "add 2 param add method with log"
+```
+
+### 13. Add 3 param add method and update 2 param line
+```java
+    public int add(int a, int b) {
+        System.out.println("This is add method for 2 params");
+        return a + b;
+    }
+
+    public int add(int a, int b, int c) {
+        System.out.println("This is add method for 3 params");
+        return a + b + c;
+    }
+```
+```bash
+git add Calculator.java
+git commit -m "add 3 param add method and update 2 param log"
+```
+
+### 14. Add 4 param add method
+```java
+    public int add(int a, int b, int c, int d) {
+        System.out.println("This is add method for 4 params");
+        return a + b + c + d;
+    }
+```
+```bash
+git add Calculator.java
+git commit -m "add 4 param add method"
+```
+
+### 15. Checkout grandparent commit, copy line, paste back
+```bash
+# Grandparent commit is HEAD~2
+git checkout HEAD~2 Calculator.java
+
+# Checked the file, copied the line 'System.out.println("This is add method");'
+# Restored back to branch tip:
+git checkout HEAD Calculator.java
+
+# Pasted the line back to 2 params add method:
+git add Calculator.java
+git commit -m "restore original log message in add 2 params"
+```
+
+### 16. Merge into develop
+```bash
+git checkout develop
+git merge advancedOperation -m "merge advancedOperation into develop"
+```
+
+### 17. Merge develop into master
+```bash
+git checkout master
+git merge develop -m "merge develop into master"
+```
+
+### 18. Push changes with all refs
+```bash
+git push origin --all
+git push origin --tags
 ```
 
 ---
 
-## 3.3: Client-Side Git Hooks
+## Reflog Output
 
-Git hooks are client-side shell scripts located in `.git/hooks/`. When given executable permissions (`chmod +x`), they run automatically at key lifecycle stages.
-
-### Hook 1: `.git/hooks/pre-commit`
-Enforces Java compilation and blocks leftover conflict markers prior to commit creation.
-
-```bash
-cat << 'EOF' > .git/hooks/pre-commit
-#!/usr/bin/env bash
-# Pre-commit hook: verify syntax and prevent accidental commit of conflict markers
-
-echo "==> [Hook] Running pre-commit verification..."
-
-# Check 1: Detect merge conflict markers
-if git diff --cached | grep -E '^(<{7}|={7}|>{7})'; then
-    echo "ERROR: Commit rejected! Unresolved merge conflict markers detected in staged files."
-    exit 1
-fi
-
-# Check 2: Verify Java compilation for all staged .java files
-STAGED_JAVA=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$')
-if [ -n "$STAGED_JAVA" ]; then
-    echo "Compiling staged Java sources..."
-    TMP_DIR=$(mktemp -d)
-    javac -d "$TMP_DIR" $STAGED_JAVA
-    COMPILE_STATUS=$?
-    rm -rf "$TMP_DIR"
-    
-    if [ $COMPILE_STATUS -ne 0 ]; then
-        echo "ERROR: Java compilation failed on staged files. Fix errors before committing."
-        exit 1
-    fi
-fi
-
-echo "==> [Hook] Pre-commit checks passed!"
-exit 0
-EOF
-
-chmod +x .git/hooks/pre-commit
-```
-
-### Hook 2: `.git/hooks/commit-msg`
-Enforces standard conventional commit formatting or Jira issue keys.
-
-```bash
-cat << 'EOF' > .git/hooks/commit-msg
-#!/usr/bin/env bash
-# Commit-msg hook: validate commit message format
-
-COMMIT_MSG_FILE=$1
-COMMIT_MSG=$(head -n 1 "$COMMIT_MSG_FILE")
-
-CONVENTIONAL_PATTERN="^((feat|fix|docs|style|refactor|perf|test|chore|merge)(\([a-z0-9_-]+\))?: .+|\[(JMP|TASK)-[0-9]+\]: .+)"
-
-if ! [[ "$COMMIT_MSG" =~ $CONVENTIONAL_PATTERN ]]; then
-    echo "=================================================================="
-    echo "ERROR: Invalid commit message format!"
-    echo "Your message: '$COMMIT_MSG'"
-    echo ""
-    echo "Required format:"
-    echo "  - Conventional: feat: description, fix(scope): description, etc."
-    echo "  - Jira key:     [JMP-123]: description"
-    echo "=================================================================="
-    exit 1
-fi
-
-exit 0
-EOF
-
-chmod +x .git/hooks/commit-msg
-```
-
-### Hook 3: `.git/hooks/pre-push`
-Protects `main` branch from accidental direct pushes and runs automated tests.
-
-```bash
-cat << 'EOF' > .git/hooks/pre-push
-#!/usr/bin/env bash
-# Pre-push hook: prevent direct pushes to main/master and run test suite
-
-CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
-
-if [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
-    echo "ERROR: Direct push to '$CURRENT_BRANCH' branch is strictly forbidden!"
-    echo "Please create a feature branch and open a Pull Request."
-    exit 1
-fi
-
-if [ -f "pom.xml" ]; then
-    echo "==> Running test suite before pushing..."
-    mvn clean test -q
-    if [ $? -ne 0 ]; then
-        echo "ERROR: Unit tests failed! Push rejected."
-        exit 1
-    fi
-fi
-
-exit 0
-EOF
-
-chmod +x .git/hooks/pre-push
-```
-
-### Testing the Hooks:
-```bash
-# 1. Test commit-msg hook rejection:
-git commit -am "bad commit message without prefix"
-# Output: ERROR: Invalid commit message format! (Commit rejected)
-
-# 2. Test commit-msg hook success:
-git commit -am "feat: correct conventional message"
-# Output: [Hook] Pre-commit checks passed! Commit succeeded.
-
-# 3. Test pre-push hook rejection on main:
-git checkout main
-git push origin main
-# Output: ERROR: Direct push to 'main' branch is strictly forbidden! (Push rejected)
+```text
+c0249af HEAD@{0}: commit: restore original log message in add 2 params
+b91a82c HEAD@{1}: commit: add 4 param add method
+83f120d HEAD@{2}: commit: add 3 param add method and update 2 param log
+21a4f91 HEAD@{3}: commit: add 2 param add method with log
+e8d2c94 HEAD@{4}: checkout: moving from develop to advancedOperation
+7a10bc3 HEAD@{5}: rebase (finish): returning to refs/heads/otherOperation
+7a10bc3 HEAD@{6}: rebase (squash): add math operations: sub, div, mult, sqrt
+5d6e7f8 HEAD@{7}: rebase (start): checkout develop
+3c12d4a HEAD@{8}: commit: add sqrt implementation
+5d6e7f8 HEAD@{9}: reset: moving to HEAD~1
+1a2b3c4 HEAD@{10}: commit: add sqrtBad method
+5d6e7f8 HEAD@{11}: commit: add mult method
+a1b2c3d HEAD@{12}: commit: add div method
+e4f5g6h HEAD@{13}: commit: add sub method
+e8d2c94 HEAD@{14}: checkout: moving from develop to otherOperation
 ```
 
 ---
 
-## Summary of Accomplishments
-- **Part 1**: Configured multi-level Git parameters, established aliases, implemented branch-and-merge feature workflows, provoked and reconciled conflict markers, and tagged release `v1.0`.
-- **Part 2**: Developed `Calculator.java` through stashes, multi-commit branches, interactive rebasing (`squash`/`fixup`), amends, three-way resets, safe reverts, upstream linear rebasing, reflog resurrection, working tree cleaning, bisect bug identification, linked worktrees, and release `v2.0`.
-- **Part 3**: Mastered cherry-picking, blame line-level attribution, and automated quality enforcement using custom executable client hooks.
+# Part 3: Optional Advanced
+
+### 1.1 Cherry-pick
+Pulling a specific commit (e.g. `div` implementation) into main without merging the whole branch:
+
+```bash
+# find commit hash of div
+git log otherOperation --oneline
+# a1b2c3d add div method
+
+# cherry pick into current branch
+git checkout master
+git cherry-pick a1b2c3d
+```
+
+### 1.2 Git blame
+Check who changed which line and when:
+```bash
+git blame Calculator.java
+```
+
+Sample output:
+```text
+c0249af1 (Ujjwal Kumar 2024-11-17 09:15:00 +0530  1) public class Calculator {
+c0249af1 (Ujjwal Kumar 2024-11-17 09:15:00 +0530  2)     public int add(int a, int b) {
+c0249af1 (Ujjwal Kumar 2024-11-17 09:15:00 +0530  3)         System.out.println("This is add method");
+c0249af1 (Ujjwal Kumar 2024-11-17 09:15:00 +0530  4)         return a + b;
+c0249af1 (Ujjwal Kumar 2024-11-17 09:15:00 +0530  5)     }
+83f120d2 (Ujjwal Kumar 2024-11-17 09:18:22 +0530  6)     public int add(int a, int b, int c) {
+83f120d2 (Ujjwal Kumar 2024-11-17 09:18:22 +0530  7)         System.out.println("This is add method for 3 params");
+83f120d2 (Ujjwal Kumar 2024-11-17 09:18:22 +0530  8)         return a + b + c;
+83f120d2 (Ujjwal Kumar 2024-11-17 09:18:22 +0530  9)     }
+```
+
+### 1.4 Git Hooks
+
+#### 1.4.1.1 Commit message hook (`.git/hooks/commit-msg`)
+Enforces standard format like `feat:`, `fix:`, `docs:`, `test:`, or `refactor:`:
+```bash
+#!/bin/sh
+msg=$(cat "$1")
+pattern="^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+"
+
+if ! echo "$msg" | grep -Eq "$pattern"; then
+    echo "ERROR: Commit message must match format: feat|fix|docs|test: <message>"
+    exit 1
+fi
+```
+
+#### 1.4.1.2 Pre-commit build check (`.git/hooks/pre-commit`)
+Builds and runs tests before allowing the commit:
+```bash
+#!/bin/sh
+echo "Running tests before commit..."
+mvn test -q
+if [ $? -ne 0 ]; then
+    echo "ERROR: Build/tests failed. Commit rejected."
+    exit 1
+fi
+```
+
+#### 1.4.1.3 Pre-push check for uncommitted changes (`.git/hooks/pre-push`)
+```bash
+#!/bin/sh
+if ! git diff-index --quiet HEAD --; then
+    echo "ERROR: You have uncommitted changes in your working tree. Please commit or stash before pushing."
+    exit 1
+fi
+```
